@@ -1,0 +1,32 @@
+pool:
+  name: MyLocalMachine
+#Your build pipeline references an undefined variable named ‘workingDirectory’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
+#Your build pipeline references an undefined variable named ‘workingDirectory’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
+#Your build pipeline references an undefined variable named ‘platform’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
+#Your build pipeline references an undefined variable named ‘configuration’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
+variables:
+  publishRunAttachments: 'true'
+  buildConfiguration: 'Release'
+
+steps:
+- script: 'npm i && npx playwright install'
+  workingDirectory: '$(Parameters.workingDirectory)'
+  displayName: 'Install Plawright'
+
+- script: |
+   npx playwright test
+   
+  workingDirectory: '$(Parameters.workingDirectory)'
+  displayName: 'Run Playwright Scripts'
+
+- task: PublishTestResults@2
+  displayName: 'Publish Test Results'
+  inputs:
+    testResultsFiles: '**/results*.xml'
+    failTaskOnFailedTests: true
+    testRunTitle: 'Test Results for playwright'
+    buildPlatform: '$(Parameters.platform)'
+    buildConfiguration: '$(Parameters.configuration)'
+    publishRunAttachments: '$(Parameters.publishRunAttachments)'
+  condition: 'succeededOrFailed()'
+
